@@ -48,11 +48,12 @@ class Assignment(db.Model):
         if assignment_new.id is not None:
             assignment = Assignment.get_by_id(assignment_new.id)
             assertions.assert_found(assignment, 'No assignment with this id was found')
-            assertions.assert_valid(assignment.state == AssignmentStateEnum.DRAFT,
-                                    'only assignment in draft state can be edited')
+            assertions.assert_valid(assignment_new.content is not None, 'content should not be none')
+            assertions.assert_valid(assignment.state == AssignmentStateEnum.DRAFT, 'only assignment in draft state can be edited')
 
             assignment.content = assignment_new.content
         else:
+            assertions.assert_valid(assignment_new.content is not None, 'content should not be none')
             assignment = assignment_new
             db.session.add(assignment_new)
 
@@ -99,6 +100,19 @@ class Assignment(db.Model):
         db.session.flush()
 
         return assignment    
+
+    @classmethod
+    def mark_grade_submitted_by_principal(cls, _id, grade, auth_principal: AuthPrincipal):
+        assignment = Assignment.get_by_id(_id)
+        assertions.assert_found(assignment, 'No assignment with this id was found')
+        # assertions.assert_valid(grade is not None, 'Only graded assignment can be regraded by principal')
+        assertions.assert_valid(assignment.state == AssignmentStateEnum.SUBMITTED or assignment.state == AssignmentStateEnum.GRADED ,'assignment is not submitted or graded yet')
+
+        assignment.grade = grade
+        assignment.state = AssignmentStateEnum.GRADED
+        db.session.flush()
+
+        return assignment      
 
     @classmethod
     def get_assignments_by_student(cls, student_id):
