@@ -87,6 +87,20 @@ class Assignment(db.Model):
         return assignment
 
     @classmethod
+    def mark_grade_submitted_by_teacher(cls, _id, grade, auth_principal: AuthPrincipal):
+        assignment = Assignment.get_by_id(_id)
+        assertions.assert_found(assignment, 'No assignment with this id was found')
+        assertions.assert_valid(grade is None, 'Only assignment with empty grade can be graded')
+        assertions.assert_valid(assignment.teacher_id == auth_principal.teacher_id,'This assignment is submitted to some other teacher')
+        assertions.assert_valid(assignment.state == AssignmentStateEnum.SUBMITTED,'assignment is not submitted yet')
+
+        assignment.grade = grade
+        assignment.state = AssignmentStateEnum.GRADED
+        db.session.flush()
+
+        return assignment    
+
+    @classmethod
     def get_assignments_by_student(cls, student_id):
         return cls.filter(cls.student_id == student_id).all()
 
