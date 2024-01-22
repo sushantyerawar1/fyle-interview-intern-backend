@@ -4,3 +4,4 @@
 SELECT state, count(*) AS Count
 FROM assignments 
 GROUP BY state;
+

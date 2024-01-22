@@ -60,3 +60,47 @@ def test_regrade_assignment(client, h_principal):
 
     assert response.json['data']['state'] == AssignmentStateEnum.GRADED.value
     assert response.json['data']['grade'] == GradeEnum.B
+
+
+def test_grade_only_exist_assignment(client, h_principal):
+    response = client.post(
+        '/principal/assignments/grade',
+        json={
+            'id': 200,
+            'grade': GradeEnum.B.value
+        },
+        headers=h_principal
+    )
+
+    assert response.status_code == 404
+
+
+
+def test_valid_grade_assignemnt_principal(client, h_principal):
+
+    """
+    failure case: API should give error when grade is other than 'A', 'B', 'C', 'D'
+    """
+
+    response = client.post(
+        '/principal/assignments/grade',
+        json={
+            'id': 2,
+            'grade': "ABD"
+        },
+        headers=h_principal
+    )
+
+    assert response.status_code == 400
+
+    
+
+
+
+    
+
+
+
+
+
+    
