@@ -102,7 +102,7 @@ def test_valid_grade_assignemnt_principal(client, h_principal):
 
     assert response.status_code == 400
 
-    
+
 
 
 

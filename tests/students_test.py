@@ -1,3 +1,6 @@
+from core.models.assignments import AssignmentStateEnum
+
+
 def test_get_assignments_student_1(client, h_student_1):
     response = client.get(
         '/student/assignments',
@@ -86,14 +89,31 @@ def test_submit_assignment_student_1(client, h_student_1):
 
     data = response.json['data']
     assert data['student_id'] == 1
-    assert data['state'] == 'SUBMITTED'
+    assert data['state'] == AssignmentStateEnum.SUBMITTED
     assert data['teacher_id'] == 2
+
+
+def test_edit_assignment_submit_assignment_student_1(client, h_student_1):
+
+    """
+    failure case: If an assignment is in Submit state, it cannot be edited again by student
+    """
+    response = client.post(
+        '/student/assignments',
+        headers=h_student_1,
+        json={
+            "id": 1,
+            "content" : "content"
+        })
+
+    assert response.status_code == 400
+
 
 
 def test_assignment_resubmit_error(client, h_student_1):
     response = client.post(
         '/student/assignments/submit',
-        headers=h_student_1,
+        headers = h_student_1,
         json={
             'id': 2,
             'teacher_id': 2
@@ -102,8 +122,3 @@ def test_assignment_resubmit_error(client, h_student_1):
     assert response.status_code == 400
     assert error_response['error'] == 'FyleError'
     assert error_response["message"] == 'only a draft assignment can be submitted'
-
-
-
-
-

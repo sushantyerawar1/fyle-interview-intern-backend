@@ -4,8 +4,8 @@ from core.apis import decorators
 from core.apis.responses import APIResponse
 from core.models.assignments import Assignment
 from core.models.teachers import Teacher
-
 from .schema import AssignmentSchema, AssignmentGradeSchema, Teacherchema
+
 principal_assignments_resources = Blueprint('principal_assignments_resources', __name__)
 
 
