@@ -76,18 +76,6 @@ class Assignment(db.Model):
 
 
     @classmethod
-    def mark_grade(cls, _id, grade, auth_principal: AuthPrincipal):
-        assignment = Assignment.get_by_id(_id)
-        assertions.assert_found(assignment, 'No assignment with this id was found')
-        assertions.assert_valid(grade is not None, 'assignment with empty grade cannot be graded')
-
-        assignment.grade = grade
-        assignment.state = AssignmentStateEnum.GRADED
-        db.session.flush()
-
-        return assignment
-
-    @classmethod
     def mark_grade_submitted_by_teacher(cls, _id, grade, auth_principal: AuthPrincipal):
         assignment = Assignment.get_by_id(_id)
         assertions.assert_found(assignment, 'No assignment with this id was found')
@@ -120,9 +108,9 @@ class Assignment(db.Model):
     def get_assignments_by_student(cls, student_id):
         return cls.filter(cls.student_id == student_id).all()
 
-    @classmethod
-    def get_assignments_by_teacher(cls, teacher_id):
-        return cls.filter(cls.teacher_id == teacher_id).all()
+    # @classmethod
+    # def get_assignments_by_teacher(cls, teacher_id):
+    #     return cls.filter(cls.teacher_id == teacher_id).all()
 
     @classmethod
     def get_assignments_submitted_to_teacher_2(cls, teacher_id):
